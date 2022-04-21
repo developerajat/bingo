@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: arial;
+        }
+        
+        .clearfix:after {
+            content: '.';
+            display: block;
+            height: 0;
+            clear: both;
+            visibility: hidden;
+        }
+        
+        #container {
+            width: 706px;
+            height: 308px;
+            margin: 50px auto;
+        }
+        
+        #grid {
+            width: 510px;
+            border: 1px solid #000;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            float: left;
+        }
+        
+        #grid li {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000;
+            float: left;
+            text-align: center;
+        }
+        
+        #grid li span {
+            line-height: 100px;
+            font-size: 30px;
+        }
+        
+        #grid li p {
+            line-height: 0;
+            font-size: 57px;
+            font-weight: 700;
+        }
+        
+        #info {
+            width: 300px;
+            float: left;
+        }
+        
+        #info h1,
+        #info h2,
+        #info a {
+            margin: 0 0 0 20px;
+        }
+        
+        #info #current_player {
+            margin-bottom: 20px;
+        }
+        
+        #bingo {
+            position: absolute;
+            top: 43%;
+            left: 30%;
+            font-size: 54px;
+            font-weight: 600;
+            color: red;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+    <script>
+        var arr = [];
+        while (arr.length < 25) {
+            var r = Math.floor(Math.random() * 25) + 1;
+            if (arr.indexOf(r) === -1) arr.push(r);
+        }
+
+        $(function() {
+            $("ul li span").each(function(index) {
+                $(this).html(arr[index]);
+            });
+        });
+
+
+        var cells_arr = [],
+
+            vertices = [
+
+                //horizontal
+                [1, 2, 3, 4, 5],
+                [6, 7, 8, 9, 10],
+                [11, 12, 13, 14, 15],
+                [16, 17, 18, 19, 20],
+                [21, 22, 23, 24, 25],
+
+                //vertical
+                [1, 6, 11, 16, 21],
+                [2, 7, 12, 17, 22],
+                [3, 8, 13, 18, 23],
+                [4, 9, 14, 19, 24],
+                [5, 10, 15, 20, 25],
+
+                //diagonals
+                [1, 7, 13, 19, 25],
+                [5, 9, 13, 17, 21],
+            ],
+            player = 0,
+            game_over = false,
+            score = [0, 0],
+            moves = 0;
+
+
+        var ev = function(target, evt, cb) {
+            if (target.attachEvent) {
+                target.attachEvent('on' + evt, cb);
+            } else {
+                target.addEventListener(evt, cb, false);
+            }
+        }
+
+        ev(window, 'load', function() {
+
+            var cells = document.getElementsByTagName('li'); //document.querySelectorAll('#grid li');
+
+            for (var i = 0, len = cells.length; i < len; i++) {
+
+                (function() {
+                    var index = i,
+                        xo = '';
+
+                    ev(cells[i], 'click', function() {
+                        console.log('here');
+                        //if cell is empty
+                        if (game_over === false && typeof cells_arr[index] === 'undefined') {
+
+                            cells_arr[index] = player;
+
+                            moves++;
+
+                            //update display
+                            this.innerHTML = '<p>' + (player === 0 ? 'X' : 'O') + '</p>';
+
+                            //check verticies for matches
+                            for (var d = 0, dlen = vertices.length; d < dlen; d++) {
+
+                                var vert = vertices[d];
+
+                                var arr = [];
+                                for (var x = 0, xlen = vert.length; x < vert.length; x++) {
+                                    arr.push(cells_arr[vert[x]]);
+                                }
+                                console.log(vert);
+
+                                var r = arr.join(',');
+                                if (r === '0,0,0' || r === '1,1,1' || moves === 25) {
+                                    console.log('hereee');
+                                    //game over
+                                    game_over = true;
+
+                                    if (moves === 25) {
+                                        document.getElementById('bingo').innerHTML = 'It`s a BINGO!!';
+                                    } else {
+
+                                        //update scores
+                                        score[player]++;
+
+                                        //update displays
+                                        document.getElementById('x_score').innerHTML = "X: " + score[0];
+                                        document.getElementById('o_score').innerHTML = "O: " + score[1];
+
+                                        document.getElementById('current_player').innerHTML = (player === 0 ? "X" : "O") + ' WINS';
+
+                                    }
+                                }
+
+                            }
+
+                            //switch players
+                            // player = player === 0 ? 1 : 0;
+
+                            // if (!game_over)
+                            // document.getElementById('current_player').innerHTML = player === 0 ? "X's" : "O's";
+
+                        }
+
+                    });
+
+                })();
+            }
+
+            ev(document.getElementById('play_again'), 'click', function(ev) {
+                location.reload();
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <span id="bingo"></span>
+    <div id="container" class="clearfix">
+
+        <ul id="grid" class="clearfix">
+
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+
+        </ul>
+
+        <div id="info">
+            <h1>Scores</h1>
+            <h2 id="x_score">0</h2>
+
+            <a href="" id="play_again">Play Again?</a>
+        </div>
+    </div>
+</body>
+
+</html>
