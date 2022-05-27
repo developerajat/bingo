@@ -52,6 +52,14 @@
             font-weight: 700;
         }
         
+        #grid li img {
+            /* line-height: 0;
+            font-size: 57px;
+            font-weight: 700; */
+            max-width: 70px;
+            margin: 15px;
+        }
+        
         #info {
             width: 300px;
             float: left;
@@ -69,11 +77,8 @@
         
         #bingo {
             position: absolute;
-            top: 43%;
-            left: 30%;
-            font-size: 54px;
-            font-weight: 600;
-            color: red;
+            top: 0;
+            left: 0;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -88,6 +93,7 @@
         $(function() {
             $("ul li span").each(function(index) {
                 $(this).html(arr[index]);
+                $(this).parent().addClass(index);
             });
         });
 
@@ -139,16 +145,16 @@
                         xo = '';
 
                     ev(cells[i], 'click', function() {
-                        console.log('here');
                         //if cell is empty
                         if (game_over === false && typeof cells_arr[index] === 'undefined') {
+                            // console.log('here');
 
                             cells_arr[index] = player;
 
                             moves++;
 
                             //update display
-                            this.innerHTML = '<p>' + (player === 0 ? 'X' : 'O') + '</p>';
+                            this.innerHTML = '<img src="public/dogesh.jpg">';
 
                             //check verticies for matches
                             for (var d = 0, dlen = vertices.length; d < dlen; d++) {
@@ -159,16 +165,18 @@
                                 for (var x = 0, xlen = vert.length; x < vert.length; x++) {
                                     arr.push(cells_arr[vert[x]]);
                                 }
-                                console.log(vert);
+                                // console.log(vert);
 
                                 var r = arr.join(',');
+                                // console.log(r);
                                 if (r === '0,0,0' || r === '1,1,1' || moves === 25) {
-                                    console.log('hereee');
+                                    console.log('hereee', moves);
                                     //game over
                                     game_over = true;
 
-                                    if (moves === 25) {
-                                        document.getElementById('bingo').innerHTML = 'It`s a BINGO!!';
+                                    if (moves === 10) {
+                                        console.log('here');
+                                        document.getElementById('bingo').innerHTML = '<img src="public/dogelina.jpg">';
                                     } else {
 
                                         //update scores
