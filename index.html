@@ -5,8 +5,6 @@
     <style>
         html,
         body {
-            padding: 0;
-            margin: 0;
             font-family: arial;
         }
         
@@ -19,9 +17,7 @@
         }
         
         #container {
-            width: 706px;
-            height: 308px;
-            margin: 50px auto;
+            display: inline;
         }
         
         #grid {
@@ -29,7 +25,7 @@
             border: 1px solid #000;
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 70px;
             float: left;
         }
         
@@ -61,8 +57,10 @@
         }
         
         #info {
-            width: 300px;
+            width: 210px;
+            margin-top: 250px;
             float: left;
+            margin-left: 50px;
         }
         
         #info h1,
@@ -75,13 +73,23 @@
             margin-bottom: 20px;
         }
         
+        #bingo img {
+            max-height: 800px;
+        }
+
         #bingo {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 10px;
+            left: 90px;
         }
+
+        #grid li:hover {
+            cursor: pointer;
+        }
+
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    
 
     <script>
         var arr = [];
@@ -93,7 +101,8 @@
         $(function() {
             $("ul li span").each(function(index) {
                 $(this).html(arr[index]);
-                $(this).parent().addClass(index);
+                $(this).attr('key', index+1);
+                $(this).parent().addClass('number');
             });
         });
 
@@ -124,6 +133,41 @@
             game_over = false,
             score = [0, 0],
             moves = 0;
+            var scoreCount = 0;
+
+        $(document).ready(function(){
+            $("#grid .number").on("click", function(event){
+
+                let num = $(this).children('span').attr('key');
+                cells_arr.push(num);
+
+                var newvertices = [];
+                vertices.forEach(array => {
+                    array = array.filter(data => data != num);
+                    if (array.length == 0) {
+                        scoreCount++;
+                    }
+                    else{
+                        newvertices.push(array);
+                    }
+                });
+
+                if (newvertices.length) {
+                    vertices = newvertices; 
+                }
+
+                
+                this.innerHTML = '<img src="dogesh.jpg">';
+                
+                $("#x_score").html(scoreCount);
+
+                if (scoreCount >= 5) {
+                    document.getElementById('bingo').innerHTML = '<img src="dogelina.jpg">';
+                    $("#container").hide();
+                }
+            });
+        });
+
 
 
         var ev = function(target, evt, cb) {
@@ -136,75 +180,7 @@
 
         ev(window, 'load', function() {
 
-            var cells = document.getElementsByTagName('li'); //document.querySelectorAll('#grid li');
-
-            for (var i = 0, len = cells.length; i < len; i++) {
-
-                (function() {
-                    var index = i,
-                        xo = '';
-
-                    ev(cells[i], 'click', function() {
-                        //if cell is empty
-                        if (game_over === false && typeof cells_arr[index] === 'undefined') {
-                            // console.log('here');
-
-                            cells_arr[index] = player;
-
-                            moves++;
-
-                            //update display
-                            this.innerHTML = '<img src="public/dogesh.jpg">';
-
-                            //check verticies for matches
-                            for (var d = 0, dlen = vertices.length; d < dlen; d++) {
-
-                                var vert = vertices[d];
-
-                                var arr = [];
-                                for (var x = 0, xlen = vert.length; x < vert.length; x++) {
-                                    arr.push(cells_arr[vert[x]]);
-                                }
-                                // console.log(vert);
-
-                                var r = arr.join(',');
-                                // console.log(r);
-                                if (r === '0,0,0' || r === '1,1,1' || moves === 25) {
-                                    console.log('hereee', moves);
-                                    //game over
-                                    game_over = true;
-
-                                    if (moves === 10) {
-                                        console.log('here');
-                                        document.getElementById('bingo').innerHTML = '<img src="public/dogelina.jpg">';
-                                    } else {
-
-                                        //update scores
-                                        score[player]++;
-
-                                        //update displays
-                                        document.getElementById('x_score').innerHTML = "X: " + score[0];
-                                        document.getElementById('o_score').innerHTML = "O: " + score[1];
-
-                                        document.getElementById('current_player').innerHTML = (player === 0 ? "X" : "O") + ' WINS';
-
-                                    }
-                                }
-
-                            }
-
-                            //switch players
-                            // player = player === 0 ? 1 : 0;
-
-                            // if (!game_over)
-                            // document.getElementById('current_player').innerHTML = player === 0 ? "X's" : "O's";
-
-                        }
-
-                    });
-
-                })();
-            }
+          
 
             ev(document.getElementById('play_again'), 'click', function(ev) {
                 location.reload();
@@ -215,7 +191,7 @@
 </head>
 
 <body>
-    <span id="bingo"></span>
+    <figure id="bingo"></figure>
     <div id="container" class="clearfix">
 
         <ul id="grid" class="clearfix">
